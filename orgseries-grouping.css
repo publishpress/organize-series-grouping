@@ -1,0 +1,17 @@
+.inner-sidebar #side-sortables {
+	width: 100%;
+}
+
+.inner-sidebar {
+	position: relative;
+	top: -220px;
+	right: 40px;
+	float: right;
+	width: 315px;
+}
+
+.series-group {
+	background: #e6db55;
+	margin: 3px;
+	padding: 3px;
+}
