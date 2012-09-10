@@ -11,7 +11,7 @@ $orgseries_groups_ver = '2.2';
 global $orgseries_groups_ver;
 
 /* LICENSE */
-//"Organize Series Plugin" and all addons for it created by this author are copyright (c) 2007-2011 Darren Ethier. This program is free software; you can redistribute it and/or
+//"Organize Series Plugin" and all addons for it created by this author are copyright (c) 2007-2012 Darren Ethier. This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
@@ -212,16 +212,13 @@ function orgseries_seriesgrouping_deactivate() {
 }
 
 function orgseries_seriesgrouping_warning() {
-	global $orgsergrpdomain;
-	$msg = '<div id="wpp-message" class="error fade"><p>'.__('The <strong>Series Grouping</strong> addon for Organize Series requires the Organize Series plugin to be installed and activated in order to work.  Addons won\'t activate until this condition is met.', $orgsergrpdomain).'</p></div>';
+	$msg = '<div id="wpp-message" class="error fade"><p>'.__('The <strong>Series Grouping</strong> addon for Organize Series requires the Organize Series plugin to be installed and activated in order to work.  Addons won\'t activate until this condition is met.', 'organize-series-grouping').'</p></div>';
 	echo $msg;
 }
 
 function orgseries_seriesgrouping_register_textdomain() {
-	$orgsergrpdomain = 'organize-series-grouping';
-	global $orgsergrpdomain;
 	$dir = basename(dirname(__FILE__)).'/lang';
-	load_plugin_textdomain($orgsergrpdomain, false, $dir);
+	load_plugin_textdomain('organize-series-grouping', false, $dir);
 }
 
 function orgseries_grouping_posttype() {
@@ -246,7 +243,6 @@ function orgseries_grouping_posttype() {
 }
 
 function orgseries_grouping_taxonomy() {
-	global $orgsergrpdomain;
 	$permalink_slug = 'series_group';
 	$object_type = array('series_grouping');
 	$capabilities = array(
@@ -256,16 +252,16 @@ function orgseries_grouping_taxonomy() {
 		'assign_terms' => 'manage_series'
 		);
 	$labels = array(
-		'name' => _x('Manage Series Groups', 'taxonomy general name', $orgsergrpdomain),
-		'singular_name' => _x('Series Group', 'taxonomy singular name', $orgsergrpdomain),
-		'search_items' => __('Search Series Groups', $orgsergrpdomain),
-		'popular_items' => __('Popular Series Groups', $orgsergrpdomain),
-		'all_items' => __('All Series Groups', $orgsergrpdomain),
-		'edit_item' => __('Edit Series Group', $orgsergrpdomain),
-		'update_item' => __('Update Series Group', $orgsergrpdomain),
-		'add_new_item' => __('Add New Series Group', $orgsergrpdomain),
-		'new_item_name' => __('New Series Group', $orgsergrpdomain),
-		'menu_name' => __('Series Groups', $orgsergrpdomain)
+		'name' => _x('Manage Series Groups', 'taxonomy general name', 'organize-series-grouping'),
+		'singular_name' => _x('Series Group', 'taxonomy singular name', 'organize-series-grouping'),
+		'search_items' => __('Search Series Groups', 'organize-series-grouping'),
+		'popular_items' => __('Popular Series Groups', 'organize-series-grouping'),
+		'all_items' => __('All Series Groups', 'organize-series-grouping'),
+		'edit_item' => __('Edit Series Group', 'organize-series-grouping'),
+		'update_item' => __('Update Series Group', 'organize-series-grouping'),
+		'add_new_item' => __('Add New Series Group', 'organize-series-grouping'),
+		'new_item_name' => __('New Series Group', 'organize-series-grouping'),
+		'menu_name' => __('Series Groups', 'organize-series-grouping')
 		);
 	$args = array(
 		'update_count_callback' => 'update_series_group_count',
@@ -382,12 +378,12 @@ function series_grouping_options_validate($newinput, $input) {
 }
 
 function series_grouping_delete_output() {
-	global $orgseries, $orgsergrpdomain;
+	global $orgseries;
 	$org_opt = $orgseries->settings;
 	$org_name = 'org_series_options';
 	?>
 		<span style="background-color: #ff3366; padding: 5px; padding-bottom: 8px;">
-			<input name="<?php echo $org_name; ?>[kill_grouping_on_delete]" id="kill_grouping_on_delete" type="checkbox" value="1" <?php checked('1', $org_opt['kill_grouping_on_delete']); ?> /> <?php _e('Delete all Organize Series GROUPING addon related data from the database when deleting the addon? (BE CAREFUL!)', $orgsergrpdomain); ?></span>
+			<input name="<?php echo $org_name; ?>[kill_grouping_on_delete]" id="kill_grouping_on_delete" type="checkbox" value="1" <?php checked('1', $org_opt['kill_grouping_on_delete']); ?> /> <?php _e('Delete all Organize Series GROUPING addon related data from the database when deleting the addon? (BE CAREFUL!)', 'organize-series-grouping'); ?></span>
 	<?php
 }
 
@@ -426,9 +422,8 @@ function orgseries_groups_styles() {
 }
 
 function series_grouping_columns($columns) {
-	global $orgsergrpdomain;
 	unset($columns['posts']);
-	$columns['series'] =  __('Series', $orgsergrpdomain);
+	$columns['series'] =  __('Series', 'organize-series-grouping');
 	return $columns;
 }
 
@@ -460,7 +455,7 @@ function select_series_group_filter($taxonomy) {
 }
 
 function series_grouping_columns_inside($content, $column_name, $id) {
-	global $orgsergropdomain, $wp_version;
+	global $wp_version;
 	$column_return = $content;
 	if ($column_name == 'series') {
 		$get = get_series_in_group($id);
@@ -476,13 +471,12 @@ function series_grouping_columns_inside($content, $column_name, $id) {
 }
 
 function manage_series_grouping_columns($columns) {
-	global $orgsergrpdomain, $pagenow;
-	$columns['group'] = __('Group(s)', $orgsergrpdomain);
+	global $pagenow;
+	$columns['group'] = __('Group(s)', 'organize-series-grouping');
 	return $columns;
 }
 
 function manage_series_grouping_columns_inside($content, $column_name, $id) {
-	global $orgsergrpdomain;
 	$group_id = orgseries_group_id($id);
 	$column_return = $content;
 	if ($column_name == 'group') {
@@ -499,7 +493,7 @@ function manage_series_grouping_columns_inside($content, $column_name, $id) {
 			$category_names = implode(",",$cat_name);
 			$column_return .= '<div class="hidden" id="inline_group_'.$id.'"><div class="group_inline_edit" id="sergroup_'.$id.'">'.$category_ids.'</div><div class="group_inline_name">'.$category_names.'</div></div>';
 		} else {
-			$column_return .= __('No group', $orgsergrpdomain);
+			$column_return .= __('No group', 'organize-series-grouping');
 			$column_return .= '<div class="hidden" id="inline_group_"><div class="group_inline_edit">0</div><div class="group_inline_name"></div></div>';
 		}
 		$column_return .= '</div>';
@@ -508,7 +502,6 @@ function manage_series_grouping_columns_inside($content, $column_name, $id) {
 }
 
 function add_orgseries_group_fields($taxonomy) { 
-	global $orgsergrpdomain;
 	$empty = '';
 	$empty = (object) $empty;
 	$empty->ID = '';
@@ -520,7 +513,7 @@ function add_orgseries_group_fields($taxonomy) {
 			<div id="side-info-column" class="inner-sidebar"> 
 				<div id="side-sortables" class="meta-box-sortables">
 					<div id="categorydiv" class="postbox"> 
-						<div class="handlediv" title="<?php _e('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e('Groups', $orgsergrpdomain); ?></span></h3> 
+						<div class="handlediv" title="<?php _e('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e('Groups', 'organize-series-grouping'); ?></span></h3> 
 							<div class="inside"> 
 								<?php post_categories_meta_box( $empty, $box ); ?>
 							</div>
@@ -566,13 +559,12 @@ function edit_orgseries_group_fields($series, $taxonomy) {
 }
 
 function orgseries_group_inline_edit($column_name, $type, $taxonomy) {
-	global $orgsergrpdomain;
 	if ( empty($taxonomy) && $type != 'edit-tags' )
 		$taxonomy = $type; //this takes care of WP 3.1 changes
 	if ( $taxonomy == 'series' && $column_name == 'group' ) { //takes care of WP3.1 changes (prevents duplicate output)
 		?>
 		<fieldset class="inline-edit-col-right inline-edit-categories"><div class="inline-edit-col">
-			<span class="title inline-edit-categories-label"><?php _e('Groups', $orgsergrpdomain); ?>
+			<span class="title inline-edit-categories-label"><?php _e('Groups', 'organize-series-grouping'); ?>
 				<span class="catshow"><?php _e('[more]'); ?></span>
 				<span class="cathide" style="display:none;"><?php _e('[less]'); ?></span>
 			</span>
