@@ -234,7 +234,7 @@ function orgseries_grouping_posttype() {
 	
 	register_post_type('series_grouping', $args);
 	
-	if ( 'edit-tags.php' == $checkpage && 'series' == $_GET['taxonomy'] ) {
+	if ( 'edit-tags.php' == $checkpage &&  ( isset($_GET['taxonomy']) && 'series' == $_GET['taxonomy'] ) ) {
 		require_once(ABSPATH.'wp-admin/includes/meta-boxes.php');
 		add_action('quick_edit_custom_box', 'orgseries_group_inline_edit', 9,3);
 
@@ -602,6 +602,8 @@ function wp_update_series_group($series_id, $taxonomy_id) {
 	global $_POST;
 	
 	extract($_POST, EXTR_SKIP);
+
+	$tax_input['series_group'] = !isset( $tax_input['series_group'] ) ? array() : $tax_input['series_group'];
 	
 	$terms = os_stringarray_to_intarray((array) $tax_input['series_group']);
 	$id = orgseries_group_id($series_id);
