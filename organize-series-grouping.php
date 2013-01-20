@@ -381,9 +381,10 @@ function series_grouping_delete_output() {
 	global $orgseries;
 	$org_opt = $orgseries->settings;
 	$org_name = 'org_series_options';
+	$k_on_delete = is_array($org_opt) && isset($org_opt['kill_grouping_on_delete']) ? $org_opt['kill_grouping_on_delete'] : 0;
 	?>
 		<span style="background-color: #ff3366; padding: 5px; padding-bottom: 8px;">
-			<input name="<?php echo $org_name; ?>[kill_grouping_on_delete]" id="kill_grouping_on_delete" type="checkbox" value="1" <?php checked('1', $org_opt['kill_grouping_on_delete']); ?> /> <?php _e('Delete all Organize Series GROUPING addon related data from the database when deleting the addon? (BE CAREFUL!)', 'organize-series-grouping'); ?></span>
+			<input name="<?php echo $org_name; ?>[kill_grouping_on_delete]" id="kill_grouping_on_delete" type="checkbox" value="1" <?php checked('1', $k_on_delete); ?> /> <?php _e('Delete all Organize Series GROUPING addon related data from the database when deleting the addon? (BE CAREFUL!)', 'organize-series-grouping'); ?></span>
 	<?php
 }
 
