@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
 	$(document).on('click', 'a.editinline', function() {
 		var id, type, editRowData, rowData, group_check, group_text;
 		var r_id = inlineEditTax.getId(this);
-		type = $('#the-list').attr('class').substr(5);
+		type = $('#the-list').attr('data-wp-lists').substr(5);
 		rowData = $('#inline_group_'+r_id);
 		id = $('series_group_id', rowData).text();
 		$('#hidden_group_id', 'div.inline_edit_group_old').remove();
@@ -15,7 +15,7 @@ jQuery(document).ready(function($) {
 			group_check = $('.group_inline_edit', rowData).text();
 			group_text = $('.group_inline_name', rowData).text();
 			
-			if ( group_check == '' ) {
+			if ( group_check === '' ) {
 				group_check = -1;
 			}
 			
