@@ -60,8 +60,8 @@ add_action('admin_menu', 'orgseries_groups_admin_menu');
 add_action('admin_init', 'orgseries_grouping_settings_setup'); 
 
 //all scripts and css
-add_action('admin_print_scripts', 'orgseries_groups_scripts');
-add_action('admin_print_styles', 'orgseries_groups_styles');
+add_action('admin_enqueue_scripts', 'orgseries_groups_scripts');
+add_action('admin_enqueue_scripts', 'orgseries_groups_styles');
 
 //hook in to existing Series Management page
 add_filter('manage_edit-series_columns', 'manage_series_grouping_columns',10);
