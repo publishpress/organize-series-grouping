@@ -57,7 +57,7 @@ add_filter('init', 'orgseries_manage_grouping_filter_setup');
 add_action('admin_menu', 'orgseries_groups_admin_menu');
 
 //hook into the existing Organize Series Options page to add grouping options.
-add_action('admin_init', 'orgseries_grouping_settings_setup'); 
+add_action('admin_init', 'orgseries_grouping_settings_setup');
 
 //all scripts and css
 add_action('admin_print_scripts', 'orgseries_groups_scripts');
@@ -103,9 +103,9 @@ function orgseries_upgrade_check() {
 		add_option('orgser_grp_upgrade_'.$orgseries_groups_ver);
 		return;
 	}
-	
+
 	orgseries_grouping_upgrade($orgseries_groups_ver, $version_check);
-	
+
 	update_option('orgseries_grouping_version', $orgseries_groups_ver);
 }
 
@@ -116,24 +116,24 @@ function orgseries_upgrade_check() {
 
 function orgseries_grouping_upgrade($this_version, $old_version) {
 	global $wpdb;
-	
+
 	if ( $old_version == '1.6' ) {
 		//let's fix up any potential errors in the database from a bad 1.5-1.6 import
 		//First up is a fix for object_id == 0;
 		$object_id = 0;
 		$wpdb->query( $wpdb->prepare("DELETE FROM $wpdb->term_relationships WHERE object_id = %d", $object_id) );
-		
+
 		//next up is reset the term_counts for all series_groups so they are correct.
 		$args = array(
 			'hide_empty' => false,
 			'fields' => 'ids'
 		);
-		
+
 		$groups = get_series_groups($args);
 		$groups = array_map('intval', $groups);
 		$groups = implode(', ',$groups);
 		$query = "SELECT term_taxonomy_id FROM $wpdb->term_taxonomy WHERE term_id IN ( $groups ) AND taxonomy = 'series_group'";
-		$terms = $wpdb->get_results( $wpdb->prepare($query) );
+		$terms = $wpdb->get_results( $query );
 		while ( $group = array_shift($terms) )
 			$_groups[] = $group->term_taxonomy_id;
 		$series_groups = $_groups;
@@ -147,29 +147,29 @@ function orgseries_grouping_upgrade($this_version, $old_version) {
 function upgrade_orgseries_grouping_from_one_five() {
 	//if ( !taxonomy_exists('series_group') )
 		//orgseries_grouping_taxonomy();
-	
+
 	//let's get all the existing series groups in the old category system
 	$args = array(
 		'hide_empty' => false,
 		'fields' => 'ids',
 		'taxonomy' => 'category'
 	);
-	
-	
+
+
 	$old_groups = get_old_series_groups($args); //list of category ids that are groups
-	
+
 	$args_b = array(
 		'include' => $old_groups,
 		'hide_empty' => false
 		);
-		
+
 	$_old_groups = get_terms('category', $args_b); //need to do this in order to get the description field.
-	
+
 	$args_c = array(
 		'hide_empty' => false,
 		'taxonomy' => 'category'
 	);
-	
+
 	//let's set up the new groups in the new taxonomy system
 	if ( empty($_old_groups) ) return;
 	foreach ( $_old_groups as $new_group ) {
@@ -181,7 +181,7 @@ function upgrade_orgseries_grouping_from_one_five() {
 				'slug' => $new_group->slug
 			)
 		);
-		
+
 		//let's get the series from the old groups, add to the new taxonomy, and then remove them from the old groups.  We'll leave the old groups (categories) in case there are regular posts added to them.
 		$get_series = get_series_in_group($new_group->term_id, $args_c);
 		$ser_term_id = (int) $new_group->term_id;
@@ -189,7 +189,7 @@ function upgrade_orgseries_grouping_from_one_five() {
 		if ( empty($get_series) ) continue;
 		foreach ( $get_series as $serial ) {
 			$id = orgseries_group_id($serial);
-			
+
 			$post_arr = array(
 				'ID' => $id,
 				'post_status' => 'publish',
@@ -198,9 +198,9 @@ function upgrade_orgseries_grouping_from_one_five() {
 			wp_set_object_terms($id, $ser_term_id, 'series_group', true);
 		}
 	}
-	
+
 	$group_ids = get_objects_in_term( $old_groups, 'category', array( hide_empty=> false));
-	
+
 	if ( empty($group_ids) ) return;
 	foreach ($group_ids as $p_id) {
 		wp_delete_object_term_relationships($p_id,'category');
@@ -223,7 +223,7 @@ function orgseries_seriesgrouping_register_textdomain() {
 
 function orgseries_grouping_posttype() {
 	global $checkpage, $_GET;
-	
+
 	$args = array(
 		'description' => 'Used for associating Series with groups',
 		'public' => false,
@@ -231,15 +231,15 @@ function orgseries_grouping_posttype() {
 		'taxonomies' => array('category', 'series_group'),
 		'rewrite' => array('slug' => 'seriesgroup')
 	);
-	
+
 	register_post_type('series_grouping', $args);
-	
+
 	if ( 'edit-tags.php' == $checkpage &&  ( isset($_GET['taxonomy']) && 'series' == $_GET['taxonomy'] ) ) {
 		require_once(ABSPATH.'wp-admin/includes/meta-boxes.php');
 		add_action('quick_edit_custom_box', 'orgseries_group_inline_edit', 9,3);
 
 	}
-	
+
 }
 
 function orgseries_grouping_taxonomy() {
@@ -285,7 +285,7 @@ function update_series_group_count($terms, $taxonomy) {
 		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->term_relationships WHERE term_taxonomy_id = %d", $term) );
 		$wpdb->update( $wpdb->term_taxonomy, compact( 'count' ), array( 'term_taxonomy_id' => $term ) );
 	}
-	
+
 	clean_term_cache($terms, '', false);
 	return true;
 }
@@ -295,7 +295,7 @@ function orgseries_grouping_import_existing_series() {
 	//do a check to see if there are existing series and NO existing posts in the 'series_grouping' post_type.  If this is the case then we need to do the import.  If not, then we break out.
 	if ( !($is_imported = get_option('orgseries_grouping_import_completed')) ) {
 			$series = get_terms( 'series', array('hide_empty'=>false, 'fields' => 'ids') );
-								
+
 			foreach ( $series as $this_series ) {
 				$post_args = array(
 					'post_type' => 'series_grouping',
@@ -307,7 +307,7 @@ function orgseries_grouping_import_existing_series() {
 			}
 			add_option('orgseries_grouping_import_completed','1');
 
-	}		
+	}
 }
 
 function orgseries_groups_admin_menu() {
@@ -343,7 +343,7 @@ function orgseries_manage_grouping_filter_setup() {
 	global $_GET, $wp_version;
 	if ( !empty($_GET['ser_grp']) && is_admin() && $wp_version >= 3.1 ) {
 		add_filter('get_terms_args', 'orgseries_grp_term_filter', 10, 2);
-	} 
+	}
 }
 
 function orgseries_grp_term_filter($args, $taxonomies) {
@@ -411,12 +411,12 @@ function orgseries_groups_styles() {
 	wp_register_style('orgseries_group_main_style', $csspath, array('global'), get_bloginfo('version'),'screen and (min-width: 1100px)');
 	wp_register_style('orgseries_group_small_style', $csspath_min, array('global'), get_bloginfo('version'), 'screen and (max-width: 1100px)');
 	wp_register_style('orgseries_group_small_on_edit', $csspath_min);
-	
+
 	if ( 'edit-tags.php' == $checkpage && 'series' == $_GET['taxonomy'] && isset($_GET['action'] ) && 'edit' == $_GET['action'] ) {
 		wp_enqueue_style('orgseries_group_main_style');
 		wp_enqueue_style('orgseries_group_small_style');
 	}
-	
+
 	if ( 'edit-tags.php' == $checkpage && 'series' == $_GET['taxonomy'] ) {
 		wp_enqueue_style('orgseries_group_small_on_edit');
 	}
@@ -462,7 +462,7 @@ function series_grouping_columns_inside($content, $column_name, $id) {
 		$get = get_series_in_group($id);
 		if ( $get == '' ) $count = '0';
 		else $count = count($get);
-		if ( $wp_version >= '3.1' ) 
+		if ( $wp_version >= '3.1' )
 			$g_link = '<a href="edit-tags.php?taxonomy=series&ser_grp='.$id.'">'.$count.'</a>';
 		else
 			$g_link = $count;
@@ -481,9 +481,9 @@ function manage_series_grouping_columns_inside($content, $column_name, $id) {
 	$group_id = orgseries_group_id($id);
 	$column_return = $content;
 	if ($column_name == 'group') {
-		
+
 		$column_return .= '<div class="group_column">';
-	
+
 		if ( $groups = wp_get_object_terms($group_id, 'series_group') ) {
 			foreach ( $groups as $group ) {
 				$column_return .= '<div class="series-group">'.$group->name . '</div> ';
@@ -502,7 +502,7 @@ function manage_series_grouping_columns_inside($content, $column_name, $id) {
 	return $column_return;
 }
 
-function add_orgseries_group_fields($taxonomy) { 
+function add_orgseries_group_fields($taxonomy) {
 	$empty = '';
 	$empty = (object) $empty;
 	$empty->ID = '';
@@ -510,19 +510,19 @@ function add_orgseries_group_fields($taxonomy) {
 			'taxonomy' => 'series_group'
 		);
 	?>
-	<div id="poststuff" class="metabox-holder has-right-sidebar"> 
-			<div id="side-info-column" class="inner-sidebar"> 
+	<div id="poststuff" class="metabox-holder has-right-sidebar">
+			<div id="side-info-column" class="inner-sidebar">
 				<div id="side-sortables" class="meta-box-sortables">
-					<div id="categorydiv" class="postbox"> 
-						<div class="handlediv" title="<?php _e('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e('Groups', 'organize-series-grouping'); ?></span></h3> 
-							<div class="inside"> 
+					<div id="categorydiv" class="postbox">
+						<div class="handlediv" title="<?php _e('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e('Groups', 'organize-series-grouping'); ?></span></h3>
+							<div class="inside">
 								<?php post_categories_meta_box( $empty, $box ); ?>
 							</div>
-						
-					</div>	
+
+					</div>
 				</div>
 			</div>
-	</div>	
+	</div>
 	<?php
 }
 
@@ -532,14 +532,14 @@ function edit_orgseries_group_fields($series, $taxonomy) {
 	$groupID = orgseries_group_id($series_ID);
 	$post_arr = array( 'ID' => $groupID, 'post_type' => 'series_grouping' );
 	$groups = wp_get_object_terms(array($groupID), 'series_group', array('fields' => 'ids'));
-	
+
 	?>
-	<div id="poststuff" class="metabox-holder has-right-sidebar"> 
-			<div id="side-info-column" class="inner-sidebar"> 
+	<div id="poststuff" class="metabox-holder has-right-sidebar">
+			<div id="side-info-column" class="inner-sidebar">
 				<div id="side-sortables" class="meta-box-sortables">
-					<div id="categorydiv" class="postbox"> 
-						<div class="handlediv" title="<?php _e('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e('Groups'); ?></span></h3> 
-							<div class="inside"> 
+					<div id="categorydiv" class="postbox">
+						<div class="handlediv" title="<?php _e('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e('Groups'); ?></span></h3>
+							<div class="inside">
 								<div id="taxonomy-category" class="categorydiv">
 									<ul id="category-tabs" class="category-tabs">
 										<li class="tabs"><a href="#category-all" tabindex="3">All Groups</a></li>
@@ -551,11 +551,11 @@ function edit_orgseries_group_fields($series, $taxonomy) {
 									</div>
 								</div>
 							</div>
-						
-					</div>	
+
+					</div>
 				</div>
 			</div>
-	</div>	
+	</div>
 	<?php
 }
 
@@ -584,9 +584,9 @@ function orgseries_group_inline_edit($column_name, $type, $taxonomy) {
 function wp_insert_series_group($series_id, $taxonomy_id) {
 	global $_POST;
 	extract($_POST, EXTR_SKIP);
-	if ( !empty($tax_input['series_group']) ) 
+	if ( !empty($tax_input['series_group']) )
 		$terms = os_stringarray_to_intarray($tax_input['series_group']);
-		
+
 	$post_arr = array(
 		'post_type' => 'series_grouping',
 		'to_ping' => 0,
@@ -601,11 +601,11 @@ function wp_insert_series_group($series_id, $taxonomy_id) {
 
 function wp_update_series_group($series_id, $taxonomy_id) {
 	global $_POST;
-	
+
 	extract($_POST, EXTR_SKIP);
 
 	$tax_input['series_group'] = !isset( $tax_input['series_group'] ) ? array() : $tax_input['series_group'];
-	
+
 	$terms = os_stringarray_to_intarray((array) $tax_input['series_group']);
 	$id = orgseries_group_id($series_id);
 	wp_set_object_terms($id, $terms, 'series_group');
@@ -616,7 +616,7 @@ function wp_delete_series_group($series_id, $taxonomy_id) {
 	global $_POST;
 	extract($_POST, EXTR_SKIP);
 	$id = orgseries_group_id($series_id);
-	wp_delete_post($id,true); 
+	wp_delete_post($id,true);
 	//TODO check, do we need wp_delete_post_term_relationship here?
 }
 
@@ -629,12 +629,12 @@ function orgseries_group_id($series_id) {
 	if ( !empty($series_id) && empty($groupid) ) {
 		//looks like the series didn't get added as a custom post for some reason.  Let's fix that
 		$groupid = wp_insert_series_group($series_id, '');
-	}	
+	}
 	wp_reset_query();
 	return $groupid;
 }
 
-function orgseries_get_seriesid_from_group($group_id) {	
+function orgseries_get_seriesid_from_group($group_id) {
 	$grouppost = &get_post($group_id);
 	if (!$grouppost || $grouppost->post_type != 'series_grouping' ) return false;
 		$series_name = $grouppost->post_name;
@@ -657,7 +657,7 @@ if ( file_exists(WP_PLUGIN_DIR . '/organize-series/inc/pue-client.php') ) {
 		'apikey' => $api_key,
 		'lang_domain' => 'organize-series'
 	);
-	
+
 	require( WP_PLUGIN_DIR . '/organize-series/inc/pue-client.php' );
 	$check_for_updates =  new PluginUpdateEngineChecker($host_server_url, $plugin_slug, $options);
 }
@@ -667,9 +667,9 @@ function os_stringarray_to_intarray($array) {
 	function to_int(&$val, $key) {
 		$val = (int) $val;
 	}
-	
+
 	array_walk($array, 'to_int');
-	
+
 	return $array;
 }
 //require_once(WP_PLUGIN_DIR . '/organize-series-grouping/for-testing.php');
