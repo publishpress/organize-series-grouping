@@ -635,7 +635,7 @@ function orgseries_group_id($series_id) {
 }
 
 function orgseries_get_seriesid_from_group($group_id) {
-	$grouppost = &get_post($group_id);
+	$grouppost = get_post($group_id);
 	if (!$grouppost || $grouppost->post_type != 'series_grouping' ) return false;
 		$series_name = $grouppost->post_name;
 		$series_id = ltrim($series_name, 'series_grouping_');
