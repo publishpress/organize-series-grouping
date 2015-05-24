@@ -478,9 +478,9 @@ function manage_series_grouping_columns($columns) {
 }
 
 function manage_series_grouping_columns_inside($content, $column_name, $id) {
-	$group_id = orgseries_group_id($id);
 	$column_return = $content;
 	if ($column_name == 'group') {
+		$group_id = orgseries_group_id($id);
 
 		$column_return .= '<div class="group_column">';
 
@@ -615,23 +615,22 @@ function wp_update_series_group($series_id, $taxonomy_id) {
 function wp_delete_series_group($series_id, $taxonomy_id) {
 	global $_POST;
 	extract($_POST, EXTR_SKIP);
-	$id = orgseries_group_id($series_id);
+	$id = orgseries_group_id( (int) $series_id );
 	wp_delete_post($id,true);
 	//TODO check, do we need wp_delete_post_term_relationship here?
 }
 
 function orgseries_group_id($series_id) {
 	$post_title = 'series_grouping_'.$series_id;
-	$query = array('name' => $post_title, 'post_type' => 'series_grouping');
-	query_posts($query);
-	the_post();
-	$groupid = get_the_ID();
-	if ( !empty($series_id) && empty($groupid) ) {
+	$query = array( 'post_status' => array( 'draft', 'publish' ), 'name' => $post_title, 'post_type' => 'series_grouping');
+	$series_posts = get_posts( $query );
+	$series_post = reset( $series_posts );
+	$group_id = $series_post instanceof WP_Post ? $series_post->ID : 0;
+	if ( $series_id && ! $group_id ) {
 		//looks like the series didn't get added as a custom post for some reason.  Let's fix that
-		$groupid = wp_insert_series_group($series_id, '');
+		return wp_insert_series_group($series_id, '');
 	}
-	wp_reset_query();
-	return $groupid;
+	return $group_id;
 }
 
 function orgseries_get_seriesid_from_group($group_id) {
