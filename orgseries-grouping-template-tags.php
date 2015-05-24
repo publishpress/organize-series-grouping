@@ -45,21 +45,22 @@ function get_series_in_group($group_id = '', $args = array() ) {
 }
 
 /* get_groups_in_series()
-* This will return the groups (categories) a series belongs to
+* This will return the groups (taxonomy) a series belongs to.
 *
 * @param int Series ID of series to list the groups for.
-* @return mixed array list of groupids the series belongs to (if there is) or false.
+* @return stdClass[] array of term objects representing the groups the series belongs to (if there is) or false.
 */
 function get_groups_in_series($seriesid) {
 	$seriesid = (int) $seriesid;
 
 	if ( $seriesid ) {
-		$groups = orgseries_group_id($seriesid);
+		$group_obj_id = orgseries_group_id($seriesid);
+		$group_term_ids = wp_get_object_terms( $group_obj_id, 'series_group' );
 	} else {
 		return false;
 	}
 
-	return $groups;
+	return (array) $group_term_ids;
 }
 
 /* get_series_groups()
