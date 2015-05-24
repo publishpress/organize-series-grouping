@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-	$(document).on('click', 'a.editinline', function() {
+	$('#the-list').on('click', '.editinline', function() {
 		var id, type, editRowData, rowData, group_check, group_text;
 		var r_id = inlineEditTax.getId(this);
 		type = $('#the-list').attr('data-wp-lists').substr(5);
