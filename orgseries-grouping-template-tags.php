@@ -51,7 +51,7 @@ function get_series_in_group($group_id = '', $args = array() ) {
 * @return mixed array list of groupids the series belongs to (if there is) or false.
 */
 function get_groups_in_series($seriesid) {
-	$seriesid = int ($seriesid);
+	$seriesid = (int) $seriesid;
 
 	if ( $seriesid ) {
 		$groups = orgseries_group_id($seriesid);
@@ -71,7 +71,7 @@ function get_groups_in_series($seriesid) {
 * 	exclude_tree - Default is an empty array. An array, comma or space-delimited string of group ids to exclude from the return array, along with all of their descendent groups.  If 'include' is non-empty, 'exclude_tree' is ignored.
 * 	include - Default is empty array. An array, comma- or space-delimited string of term_ids to include in the return array.  If both include and exclude are empty then all the groups containing series will be returned.
 *	number - The maximum number of groups to return. Default is to return them all.
-* 	pad_counts - If set to true will include the quantity of a grou's children in the quantity of each group's "count" object variable.
+* 	pad_counts - If set to true will include the quantity of a group's children in the quantity of each group's "count" object variable.
 * 	offset - The number by which to offset the groups query.
 * 	heirarchichal - Default is true. Use to indicate if we want any groups that have non-empty descendants (even if 'hide_empty' is set to true).
 *	'child_of' - When used, should be set to the integer of the group_ID (term ID).  It's default is 0. If set to a non-zero value, all returned groups will be descendants of that group.
