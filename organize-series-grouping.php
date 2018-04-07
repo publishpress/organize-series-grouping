@@ -2,12 +2,12 @@
 /*
 Plugin Name: Organize Series Grouping
 Description: This addon gives you the ability to group series together by category.  It modifies the ui for the "Manage Series" page to add series to various categories (you can add to more than one category).  It also provides various template tags for getting (and outputting) the series data from the database within a certain group.
-Version: 2.2.4
+Version: 2.2.5.rc.000
 Author: Darren Ethier
 Author URI: http://organizeseries.com
 */
 
-$orgseries_groups_ver = '2.2.4';
+$orgseries_groups_ver = '2.2.5.rc.000';
 global $orgseries_groups_ver;
 require __DIR__ . '/vendor/autoload.php';
 
