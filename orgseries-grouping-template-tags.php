@@ -17,7 +17,7 @@
 * @param int|array $group_id The id for the group you want the list of series from or array of group ids.  group_id = term_id.
 * @param string|array $args The values of what to search for when returning terms.  For a list of what args you can include see the "get_terms()" function found in /wp-includes/taxonomy.php
 *
-* @return array List of Series Objects.  Will return false if there are no series.
+* @return array List of Series Objects.  Will return false if there are no series
 */
 function get_series_in_group($group_id = '', $args = array() ) {
 	$group_id = (int) $group_id;
