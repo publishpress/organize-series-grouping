@@ -21,7 +21,7 @@
 */
 function get_series_in_group($group_id = '', $args = array() ) {
 	$group_id = (int) $group_id;
-	$seriesids = '';
+	$seriesids = array();
 
 	if (array_key_exists('taxonomy', $args) ) { //upgrade from 1.5
 		$taxonomy = $args['taxonomy'];
