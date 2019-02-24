@@ -449,7 +449,7 @@ function get_old_series_groups( $args = array() ) {
 		return $group_count;
 	}
 
-	$series_groups = $wpdb->get_results($wpdb->prepare($query));
+	$series_groups = $wpdb->get_results($query);
 
 	$_groups = array();
 
